@@ -16,46 +16,54 @@
                 <p class="rotate-90 text-5xl">Upload</p>
             </div>
             <div class="flex-1 bg-gray-100 flex justify-center items-center">
-                <div v-show="!showCode" class="w-full h-full flex flex-col justify-center items-center gap-5">
-                    <label
-                        class="flex justify-center w-1/2 h-1/2 px-4 transition bg-gray-100 border-2 border-gray-400 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-600 focus:outline-none">
-                        <span class="flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            <span class="font-medium">
-                                Drop files to Attach, or
-                                <span class="text-blue-600 underline">browse</span>
-                            </span>
-                        </span>
-                        <input type="file" name="file_upload" class="hidden">
-                    </label>
-                    <button class="border border-black text-black py-2 px-4 rounded" type="submit"
-                        @click="showDownloadCode">
-                        Upload
-                    </button>
+                <div v-if="!showUploader">
+                    USE THIS CODE TO DOWNLOAD THE FILE
+                    <br><br>
+                    {{ uploadedData }}
                 </div>
-                <div v-show="showCode" class="text-center">
-                    <p>
-                        USE THIS CODE TO DOWNLOAD THE FILE
-                    </p>
-                    <p>
-                        25072005
-                    </p>
-                </div>
+                <lr-file-uploader-regular v-else
+                    css-src="https://esm.sh/@uploadcare/blocks@0.22.13/web/file-uploader-regular.min.css"
+                    ctx-name="my-uploader" class="my-config">
+                </lr-file-uploader-regular>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import * as LR from "@uploadcare/blocks";
 
-const showCode = ref(false);
+const showUploader = ref(true);
+const uploadedData = ref('');
 
-function showDownloadCode() {
-    showCode.value = true;
-}
+onMounted(() => {
+    const compilerOptions = {
+        isCustomElement: (tag) => tag.startsWith("lr-"),
+    };
+
+    LR.registerBlocks(LR, compilerOptions);
+
+    window.addEventListener('LR_DATA_OUTPUT', (e) => {
+        if (e.detail.data && e.detail.data.length > 0) {
+            showUploader.value = false;
+            uploadedData.value = e.detail.data[0].uuid;
+        }
+    });
+});
 </script>
+
+<style>
+.my-config {
+    --cfg-pubkey: "162c19c1d80ea7805643";
+    --cfg-img-only: 1;
+    --cfg-multiple: 0;
+    --cfg-max-local-file-size-bytes: 10000000;
+    --cfg-use-cloud-image-editor: 1;
+    --cfg-source-list: "local, url, camera, dropbox";
+    --darkmode: 0;
+    --h-accent: 223;
+    --s-accent: 100%;
+    --l-accent: 61%;
+}
+</style>
