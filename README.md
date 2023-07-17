@@ -1,120 +1,73 @@
-# FileDrop
+# Email Validation API
 
-FileDrop is a versatile file sharing website that allows users to upload and share files using unique IDs for easy access and collaboration.
-
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Key Features](#key-features)
-- [Technologies](#technologies)
-- [Getting Started](#getting-started)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-
-## Introduction
-
-FileDrop is a feature-rich file sharing platform that provides users with a seamless experience for uploading and sharing files. The project combines modern frontend technologies with secure backend storage to offer an intuitive and efficient file sharing solution.
-
-## Key Features
-
-- **File Sharing**: Upload and share files of any type with ease.
-- **Unique ID Generation**: Every file uploaded to FileDrop is assigned a unique ID, simplifying file access and collaboration.
-- **Secure Storage**: FileDrop ensures the confidentiality and privacy of uploaded files through secure storage mechanisms.
-- **Efficient Searching**: Quickly locate specific files using their unique ID.
-- **User-Friendly Interface**: FileDrop offers a user-friendly and intuitive interface, enhancing the overall experience for users.
-
-## Technologies
-
-- **Frontend**: Vue.js
-- **Backend**: Go (Golang)
-- **Database**: PostgreSQL
+The Email Validation API is a Go-based API that allows you to validate email addresses and check their domain properties such as MX records, SPF, and DMARC.
 
 ## Getting Started
 
-To start using FileDrop locally, follow these steps:
+To use the Email Validation API, follow the instructions below.
 
-1. Clone the repository:
+### Prerequisites
 
-   ```bash
-   git clone https://github.com/kalviumcommunity/FileDrop.git
-   cd FileDrop
-   ```
+- Go programming language (version 1.13 or higher)
+- Required dependencies: `github.com/badoux/checkmail`, `github.com/gin-gonic/gin`
+- Internet connectivity to perform domain lookups
 
-2. Install frontend dependencies:
+### Installation
 
-   ```bash
-   cd frontend
-   npm install
-   ```
+1.  Clone the repository:
 
-3. Configure the backend:
+    ```bash
+    git clone https://github.com/Ahamed1846/FileDrop.git
+    ```
 
-- Create a `.env` file in the root directory (or set environment variables) with the following settings:
+2.  Navigate to the project directory:
 
-  ```bash
-  PORT=8080
-  DATABASE_URL=postgresql://user:password@localhost:5432/filedrop
-  ```
+    ```bash
+    cd FileDrop
+    ```
 
-4. Run the frontend:
+3.  Switch to the API branch:
+    ```bash
+    git checkout go-api
+    ```
+4.  Build and run the Go API:
+    ```bash
+    go build .
+    ./FileDrop
+    ```
+By default, the API server will start listening on port 8080.
 
-   ```bash
-   # From the root directory
-   cd frontend
-   npm run dev
-   ```
+# API Endpoints
+The Email Validation API exposes the following endpoint:
 
-5. Run the backend:
+## Check Email
+    GET /check/:email
 
-   ```bash
-   # From the root directory
-   go run main.go
-   ```
+**Parameters:**
+- `email`: The email address to validate.
 
-6. Open your web browser and visit http://localhost:8080 to access the FileDrop application.
+**Example Request:**
+```bash
+GET /check/johndoe@example.com
+```
+**Example Response:**
+```bash
+{
+  "email": "johndoe@example.com",
+  "format": true,
+  "domain": "example.com",
+  "mx": true,
+  "mx_records": ["smtp.example.com", "mx1.example.com"],
+  "spf": true,
+  "spf_record": "v=spf1 mx ~all",
+  "dmarc": true,
+  "dmarc_record": "v=DMARC1; p=none",
+  "validity": "Valid"
+}
+```
 
-## Deployment
+# Error Handling
+In case of errors, the API will return the appropriate HTTP status code along with an error message in the response body.
 
-To deploy FileDrop to a production environment, follow these general steps:
-
-1. Build the frontend for production:
-
-   ```bash
-   # From the root directory
-   cd frontend
-   npm run build
-   ```
-
-2. Build the backend for production:
-
-   ```bash
-   # From the root directory
-   go build -o filedrop
-   ```
-
-3. Set up a PostgreSQL instance on AWS RDS or any other preferred cloud provider.
-
-4. Set the necessary environment variables for the backend in the production environment.
-
-5. Deploy the built backend and the frontend build to your AWS EC2 instance or any other preferred cloud server.
-
-6. Configure your AWS security groups and network settings to allow incoming traffic on port 8080.
-
-7. Open your web browser and visit your AWS EC2 instance's public IP or domain name to access the FileDrop application.
-
-## Contributing
-
-Contributions are welcome! If you encounter any issues or have suggestions for improvements, please don't hesitate to submit bug reports, feature requests, and pull requests through the GitHub repository.
-
-### Contribution Guidelines
-
-To contribute to FileDrop, please follow these guidelines:
-
-1. Fork the repository to your GitHub account.
-2. Clone the project to your local machine.
-3. Create a new branch with a descriptive name (e.g., my-new-feature).
-4. Make changes to the code and commit them to your branch.
-5. Push your changes to your fork (`git push origin my-new-feature`).
-6. Open a pull request in the original repository, describing the changes you've made.
-
-Please ensure that you adhere to the standard coding conventions and best practices.
+- `400 Bad Request`: When the email address parameter is missing or empty.
+- `404 Not Found`: When the requested endpoint does not exist.
